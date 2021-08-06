@@ -3,6 +3,7 @@ import starfall.database
 import aiosqlite
 import json
 
+from starfall.database import Widget
 from starfall.handlers.base import BaseHandler
 from jsonschema import validate
 from jsonschema import ValidationError
@@ -10,6 +11,11 @@ from http import HTTPStatus
 
 
 class WidgetsHandler(BaseHandler):
+    WidgetDAO = None
+
+    def prepare(self):
+        self.WidgetDAO = Widget()
+
     #####
     # API Method Functions
     #####
@@ -42,7 +48,7 @@ class WidgetsHandler(BaseHandler):
     #####
     async def get_single_record(self, key):
         async with aiosqlite.connect(self.get_db()) as db:
-            row = await starfall.database.get_widget(db, id=key)
+            row = await self.WidgetDAO.get_from_id(db=db, id=key)
             self.set_default_headers()
             self.write(
                 json.dumps(
@@ -52,7 +58,7 @@ class WidgetsHandler(BaseHandler):
 
     async def get_record_list(self):
         async with aiosqlite.connect(self.get_db()) as db:
-            results = await starfall.database.list_all_widgets(db)
+            results = await self.WidgetDAO.get_list(db)
             self.set_default_headers()
             self.write(
                 json.dumps(
@@ -74,7 +80,7 @@ class WidgetsHandler(BaseHandler):
             )
 
             async with aiosqlite.connect(self.get_db()) as db:
-                row = await starfall.database.create_widget(db, data=widget)
+                row = await self.WidgetDAO.create(db=db, data=widget)
                 self.set_default_headers()
                 self.write(
                     json.dumps(
@@ -110,10 +116,7 @@ class WidgetsHandler(BaseHandler):
                 )
 
                 async with aiosqlite.connect(self.get_db()) as db:
-                    row = await starfall.database.update_widget(
-                        db,
-                        data=widget
-                    )
+                    row = await self.WidgetDAO.update(db=db, data=widget)
                     self.set_default_headers()
                     self.write(
                         json.dumps(
@@ -125,6 +128,6 @@ class WidgetsHandler(BaseHandler):
 
     async def delete_record(self, key):
         async with aiosqlite.connect(self.get_db()) as db:
-            await starfall.database.delete_widget(db, id=key)
+            await self.WidgetDAO.delete(db=db, id=key)
             self.set_default_headers()
             self.write_response(status_code=HTTPStatus.NO_CONTENT)
