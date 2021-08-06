@@ -31,3 +31,26 @@ async def list_all_widgets(
         )
         for row in rows
     ]
+
+
+async def get_widget(
+        db: aiosqlite.Connection,
+        id: int = 0
+) -> starfall.models.Widget:
+    db.row_factory = aiosqlite.Row
+    params = {}
+    query = " ".join(
+        [
+            "SELECT `widgets`.* FROM `widgets`",
+            f"WHERE id = {id}"
+        ]
+    )
+    cursor = await db.execute(query, params)
+    row = await cursor.fetchone()
+    return starfall.models.Widget(
+        id=row["id"],
+        name=row["name"],
+        number=row["number"],
+        createdOn=row["createdOn"],
+        updatedOn=row["updatedOn"]
+    )
