@@ -47,3 +47,45 @@ Starts the server with the env vars set in the make file.
 ```bash
 make server
 ```
+
+## Evaluations
+
+Flake8 Results
+```
+(venv) zanson@Gibson: ~/projects/starfall [master▲]
+./venv/bin/flake8 ./starfall/
+(venv) zanson@Gibson: ~/projects/starfall [master▲]
+
+```
+
+Bandit Results
+```
+$ bandit -r ./starfall
+[main]	INFO	profile include tests: None
+[main]	INFO	profile exclude tests: None
+[main]	INFO	cli include tests: None
+[main]	INFO	cli exclude tests: None
+[main]	INFO	running on Python 3.8.10
+Run started:2021-08-06 23:44:12.500179
+
+Test results:
+	No issues identified.
+
+Code scanned:
+	Total lines of code: 313
+	Total lines skipped (#nosec): 0
+
+Run metrics:
+	Total issues (by severity):
+		Undefined: 0.0
+		Low: 0.0
+		Medium: 0.0
+		High: 0.0
+	Total issues (by confidence):
+		Undefined: 0.0
+		Low: 0.0
+		Medium: 0.0
+		High: 0.0
+Files skipped (0):
+
+```

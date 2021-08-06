@@ -1,5 +1,4 @@
 import logging
-
 import click
 import tornado.ioloop
 import tornado.web

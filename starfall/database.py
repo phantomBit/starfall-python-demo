@@ -1,6 +1,5 @@
 import logging
 import typing
-
 import aiosqlite
 
 import starfall.models
