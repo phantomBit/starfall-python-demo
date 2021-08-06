@@ -20,13 +20,21 @@ class WidgetsHandler(tornado.web.RequestHandler):
         if self.request.body:
             return json.loads(self.request.body)
 
+    def write_response(self, status_code, result=None, message=None):
+        self.set_status(status_code)
+        if result:
+            self.finish(json.dumps(result))
+        elif message:
+            self.finish(json.dumps({
+                "message": message
+            }))
+        elif status_code:
+            self.set_status(status_code)
+            self.finish()
+
     def validation_error(self, ex):
-        self.finish(json.dumps({
-            'error': {
-                'code': HTTPStatus.BAD_REQUEST,
-                'message': " ".join(["Invalid Request Payload key '", str(ex.relative_path[0]), "':", ex.message])
-            }
-        }))
+        self.write_response(status_code=HTTPStatus.BAD_REQUEST, message=" ".join(
+            ["Invalid Request Payload:", ex.message]))
 
     async def get(self, key) -> None:
         if not key:
@@ -36,13 +44,7 @@ class WidgetsHandler(tornado.web.RequestHandler):
                 self.write(
                     json.dumps(
                         [
-                            {
-                                "id": row.id,
-                                "name": row.name,
-                                "number": row.number,
-                                "created_on": row.createdOn,
-                                "updated_on": row.updatedOn,
-                            }
+                            starfall.models.widget_to_json(row)
                             for row in results
                         ]
                     )
@@ -53,30 +55,32 @@ class WidgetsHandler(tornado.web.RequestHandler):
                 self.set_default_headers()
                 self.write(
                     json.dumps(
-                        {
-                            "id": row.id,
-                            "name": row.name,
-                            "number": row.number,
-                            "created_on": row.createdOn,
-                            "updated_on": row.updatedOn,
-                        }
+                        starfall.models.widget_to_json(row)
                     )
                 )
 
-    async def post(self, args):
-        try:
-            data = self.data_received()
-            schema = {
-                "type": "object",
-                "properties": {
-                    "number": {"type": "integer", "minimum": 0},
-                    "name": {"type": "string", "minLength": 1, "maxLength": 64},
-                },
-            }
+    async def post(self, key):
+        if key:
+            self.write_response(status_code=HTTPStatus.NOT_FOUND)
+        else:
+            try:
+                json_data = self.data_received()
+                validate(instance=json_data, schema=starfall.models.WIDGET_SCHEMA)
 
-            validate(instance=data, schema=schema)
+                widget = starfall.models.Widget(
+                    name=json_data["name"],
+                    number=json_data["number"]
+                )
 
-            self.write('true')
+                async with aiosqlite.connect(self.application.settings["database"]) as db:
+                    row = await starfall.database.create_widget(db, widget)
+                    self.set_default_headers()
+                    self.write(
+                        json.dumps(
+                            starfall.models.widget_to_json(row)
+                        )
+                    )
 
-        except ValidationError as ex:
-            self.validation_error(ex)
+
+            except ValidationError as ex:
+                self.validation_error(ex)

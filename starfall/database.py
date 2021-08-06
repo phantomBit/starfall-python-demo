@@ -54,3 +54,17 @@ async def get_widget(
         createdOn=row["createdOn"],
         updatedOn=row["updatedOn"]
     )
+
+
+async def create_widget(
+        db: aiosqlite.Connection,
+        data: starfall.models.Widget
+) -> starfall.models.Widget:
+    cursor = await db.execute(
+        "INSERT INTO `widgets` (`name`, `number`)"
+        "VALUES (:name, :number)",
+        {"name": data.name, "number": data.number},
+    )
+    await db.commit()
+
+    return await get_widget(db, cursor.lastrowid)
