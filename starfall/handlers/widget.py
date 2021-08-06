@@ -84,3 +84,32 @@ class WidgetsHandler(tornado.web.RequestHandler):
 
             except ValidationError as ex:
                 self.validation_error(ex)
+
+    async def put(self, key):
+        if not key:
+            self.write_response(status_code=HTTPStatus.NOT_FOUND)
+        else:
+            try:
+                json_data = self.data_received()
+                validate(instance=json_data, schema=starfall.models.WIDGET_SCHEMA)
+                validate(instance=json_data, schema=starfall.models.WIDGET_SCHEMA_POST)
+
+                if json_data["id"] != int(key):
+                    self.write_response(status_code=HTTPStatus.BAD_REQUEST, message="Key must match ID")
+                else:
+                    widget = starfall.models.Widget(
+                        id=json_data["id"],
+                        name=json_data["name"],
+                        number=json_data["number"]
+                    )
+
+                    async with aiosqlite.connect(self.application.settings["database"]) as db:
+                        row = await starfall.database.update_widget(db, widget)
+                        self.set_default_headers()
+                        self.write(
+                            json.dumps(
+                                starfall.models.widget_to_json(row)
+                            )
+                        )
+            except ValidationError as ex:
+                self.validation_error(ex)

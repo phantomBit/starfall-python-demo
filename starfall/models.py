@@ -12,6 +12,10 @@ WIDGET_SCHEMA = {
     "required": ["number", "name"]
 }
 
+WIDGET_SCHEMA_POST = {
+    "required": ["number", "name", "id"]
+}
+
 
 @dataclasses.dataclass
 class Widget:
