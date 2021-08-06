@@ -1,0 +1,119 @@
+openapi: "3.0.2"
+info:
+  title: Starfall API
+  version: "1.0"
+servers:
+  - url: https://localhost:8090/v1/
+paths:
+  /widget:
+    get:
+      summary: Get a list of all widgets
+      tags:
+        - widget
+      responses:
+        '200':
+          description: A list of widgets
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WidgetsList'
+    post:
+      summary: Add a widget
+      tags:
+        - widget
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WidgetWrite'
+      responses:
+        '201':
+          description: Created
+  /widget/{id}:
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+          minimum: 0
+        required: true
+        description: Numeric ID of the widget to get
+      get:
+        summary: Get widget by id
+        tags:
+          - widget
+        responses:
+          '200':
+            description: A single of widget
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/WidgetRead'
+      put:
+        summary: Update widget by id
+        tags:
+          - widget
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WidgetWrite'
+        responses:
+          '200':
+            description: A single of widget
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/WidgetRead'
+      delete:
+        summary: Delete widget by id
+        tags:
+          - widget
+        responses:
+          '204':
+            description: Deleted
+          '404':
+            description: id not found
+
+components:
+  schemas:
+    WidgetWrite:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The widget ID.
+        name:
+          type: string
+          description: The name of the widget.
+          maximum: 64
+        number:
+          type: integer
+          description: Number of Parts.
+          format: int32
+          minimum: 0
+          default: 0
+      example:
+        id: 13
+        name: Old Ones
+        number: 1000000
+    WidgetRead:
+      allOf: # Combines the BasicErrorModel and the inline model
+        - $ref: '#/components/schemas/WidgetWrite'
+        - type: object
+          properties:
+            createdOn:
+              type: string
+              format: date-time
+            updatedOn:
+              type: string
+              format: date-time
+          example:
+            createdOn: "2021-08-06T19:18:17.337Z"
+            updatedOn: "2021-08-06T19:18:17.337Z"
+    WidgetsList:
+      type: array
+      items:
+        $ref: '#/components/schemas/WidgetRead'

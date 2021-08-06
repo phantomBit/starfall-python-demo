@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS `widgets`
 (
     `id`        INTEGER PRIMARY KEY AUTOINCREMENT,
     `name`      VARCHAR(64) NOT NULL,
-    `number`    TEXT,
+    `number`    INTEGER,
     `createdOn` DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
     `updatedOn` DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
