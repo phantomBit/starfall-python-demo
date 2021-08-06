@@ -2,6 +2,9 @@
 
 A demo API in Python3 using Tornado
 
+Some code for server init and api handling came from open source projects and other exmaples 
+as a base but highly modified for this specific usecase. This is my first ground up python API using tornado.
+
 ## Setup and Install
 
 This package requires some pre-reqs.
