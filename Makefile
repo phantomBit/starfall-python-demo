@@ -33,6 +33,9 @@ server:
 	STARFALL_DATABASE=${STARFALL_DATABASE} \
 	&& poetry run starfall server
 
+flake:
+	./venv/bin/flake8 ./starfall/
+
 ## ----------------------
 ## QUICK COMMANDS
 ## ----------------------
