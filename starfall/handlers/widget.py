@@ -73,7 +73,7 @@ class WidgetsHandler(tornado.web.RequestHandler):
                 )
 
                 async with aiosqlite.connect(self.application.settings["database"]) as db:
-                    row = await starfall.database.create_widget(db, widget)
+                    row = await starfall.database.create_widget(db, data=widget)
                     self.set_default_headers()
                     self.write(
                         json.dumps(
@@ -104,7 +104,7 @@ class WidgetsHandler(tornado.web.RequestHandler):
                     )
 
                     async with aiosqlite.connect(self.application.settings["database"]) as db:
-                        row = await starfall.database.update_widget(db, widget)
+                        row = await starfall.database.update_widget(db, data=widget)
                         self.set_default_headers()
                         self.write(
                             json.dumps(
@@ -113,3 +113,12 @@ class WidgetsHandler(tornado.web.RequestHandler):
                         )
             except ValidationError as ex:
                 self.validation_error(ex)
+
+    async def delete(self, key):
+        if not key:
+            self.write_response(status_code=HTTPStatus.NOT_FOUND)
+        else:
+            async with aiosqlite.connect(self.application.settings["database"]) as db:
+                row = await starfall.database.delete_widget(db, id=key)
+                self.set_default_headers()
+                self.write_response(status_code=HTTPStatus.NO_CONTENT)

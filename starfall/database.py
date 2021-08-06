@@ -83,3 +83,14 @@ async def update_widget(
     await db.commit()
 
     return await get_widget(db, data.id)
+
+
+async def delete_widget(
+        db: aiosqlite.Connection,
+        id: int
+) -> None:
+    await db.execute(
+        "DELETE FROM `widgets` WHERE id = :id",
+        {"id": id}
+    )
+    await db.commit()
