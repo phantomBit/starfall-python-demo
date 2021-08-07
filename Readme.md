@@ -30,6 +30,33 @@ for subsequent restarts run
 make startup
 ```
 
+## Where can I find X?
+
+**pip?** 
+
+no, Poetry is being used for dependency management. take a look at the `pyproject.toml`
+
+**Where is the SQL?** 
+
+`tables.sql`
+
+**Where is the APP?** 
+* `/starfall/cli.py` is what starts it off. The main server is run from there.
+* `/starfall/server.py` Bootstraps the routes
+* `/starfall/handlers/widget.py` takes the routing from there. Basically the main controller.
+* `/starfall/database.py` is acting as a DAO. could be named better for future use, but it describes its use well for now
+* `/starfall/models.py` holds the widget models for now, should be refactored as more models are added.
+
+**What enforces the created and updated timestamps?** 
+
+Theses are controlled by the database and are readonly to the user. This
+separation of concerns allows for better long term auditing if many systems 
+are modifying this value. 
+
+**How is validation controlled?**
+
+Using JSON Schema. This wont create the best error messages though, but it does the job
+
 ## Useful Commands
 
 Always check the Makefile for more in depth commands and env variables
