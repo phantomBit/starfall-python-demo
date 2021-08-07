@@ -2,7 +2,7 @@
 
 A demo API in Python3 using Tornado
 
-Some code for server init and api handling came from open source projects and other exmaples 
+Some code for server init and api handling came from open source projects and other exmaples
 as a base but highly modified for this specific usecase. This is my first ground up python API using tornado.
 
 ## Setup and Install
@@ -14,6 +14,8 @@ This package requires some pre-reqs.
 
 If you do not have poetry installed globally, this script will add it as well as create the python venv
 ```bash
+make env/init
+source ./venv/bin/activate
 make pre-req
 ```
 
@@ -21,7 +23,7 @@ To run the env from nothing
 ```bash
 make first-init startup
 ```
-then goto http://localhost:8090/
+then goto http://localhost:8090/v1/widget
 
 for subsequent restarts run
 ```bash

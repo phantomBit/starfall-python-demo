@@ -5,13 +5,16 @@ STARFALL_PORT=8090
 ## ----------------------
 ## PRE REQ INSTALLS
 ## ----------------------
-pre-req: pre-req/poetry env/init
+pre-req: pre-req/poetry install
 
 pre-req/poetry:
 	@type poetry >/dev/null 2>&1 ||  pip install poetry
 
 env/init:
-	python -m venv ./venv
+	python3 -m venv ./venv
+
+install:
+	poetry install
 
 ## ----------------------
 ## RUNNING SCRIPTS
@@ -45,3 +48,7 @@ first-init: env/activate sqlite/init
 startup: build server
 
 clean-all: sqlite/destroy
+
+nuke: sqlite/destroy
+	rm -rf ./venv
+	rm -rf dist
